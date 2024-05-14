@@ -27,13 +27,19 @@ jobs:
     - name: Run database migrations
       run: php artisan migrate --force
 
+    # Install ngrok
+    - name: Install ngrok
+      run: |
+        curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null
+        echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list
+        sudo apt update
+        sudo apt install ngrok
+
     # Start ngrok
     - name: Start ngrok
       run: |
-        wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
-        unzip ngrok-stable-linux-amd64.zip
-        ./ngrok authtoken 2gRhaa4vpdwtEHDVOosrrGt6Cch_269G7xqzoRiDaZKQR7LzK
-        ./ngrok http 8000 &
+        ngrok authtoken 2gRhaa4vpdwtEHDVOosrrGt6Cch_269G7xqzoRiDaZKQR7LzK
+        ngrok http 8000 &
 
     - name: Run tests with ngrok
       run: |
@@ -45,7 +51,7 @@ jobs:
         # Set ngrok URL as environment variable
         export BASE_URL=$NGROK_URL
         # Run tests
-        # php artisan test
+        php artisan test
 
     - name: Stop ngrok
       run: kill $(ps aux | grep '[n]grok' | awk '{print $2}')
