@@ -57,5 +57,4 @@ jobs:
         # Run tests
         php artisan test
 
-    - name: Stop ngrok
-      run: kill $(ps aux | grep '[n]grok' | awk '{print $2}')
+    
