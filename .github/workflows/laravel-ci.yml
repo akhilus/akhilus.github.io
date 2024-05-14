@@ -13,48 +13,46 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-    - name: Set up PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.2'
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
 
-    - name: Install dependencies
-      run: composer install --prefer-dist --no-ansi --no-interaction --no-progress --no-scripts
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-ansi --no-interaction --no-progress --no-scripts
 
-    - name: Run database migrations
-      run: php artisan migrate --force
+      - name: Run database migrations
+        run: php artisan migrate --force
 
       # Generate application key
-    - name: Generate application key
-      run: php artisan key:generate
+      - name: Generate application key
+        run: php artisan key:generate
 
-    # Install ngrok
-    - name: Install ngrok
-      run: |
-        curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null
-        echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list
-        sudo apt update
-        sudo apt install ngrok
+      # Install ngrok
+      - name: Install ngrok
+        run: |
+          curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null
+          echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list
+          sudo apt update
+          sudo apt install ngrok
 
-    # Start ngrok
-    - name: Start ngrok
-      run: |
-        ngrok authtoken 2gRhaa4vpdwtEHDVOosrrGt6Cch_269G7xqzoRiDaZKQR7LzK
-        ngrok http 8000 &
+      # Start ngrok and run tests
+      - name: Run tests with ngrok
+        run: |
+          # Start ngrok with authentication and log the URL
+          ngrok authtoken 2gRhaa4vpdwtEHDVOosrrGt6Cch_269G7xqzoRiDaZKQR7LzK
+          ngrok http 8000 -log=stdout &
+          sleep 5  # Wait for ngrok to start
 
-    - name: Run tests with ngrok
-      run: |
-        # Wait for ngrok to start
-        sleep 5
-        # Get ngrok URL
-        NGROK_URL=$(curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url')
-        echo "Ngrok URL: $NGROK_URL"
-        # Set ngrok URL as environment variable
-        export BASE_URL=$NGROK_URL
-        # Run tests
-        php artisan test
+          # Extract ngrok URL from the ngrok log
+          NGROK_URL=$(curl -s localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url')
+          echo "Ngrok URL: $NGROK_URL"
 
-    
+          # Set ngrok URL as environment variable
+          export BASE_URL=$NGROK_URL
+
+          # Run tests
+          php artisan test
