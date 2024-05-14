@@ -32,6 +32,7 @@ jobs:
       run: |
         wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
         unzip ngrok-stable-linux-amd64.zip
+        ./ngrok authtoken 2gRhaa4vpdwtEHDVOosrrGt6Cch_269G7xqzoRiDaZKQR7LzK
         ./ngrok http 8000 &
 
     - name: Run tests with ngrok
@@ -41,8 +42,10 @@ jobs:
         # Get ngrok URL
         NGROK_URL=$(curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url')
         echo "Ngrok URL: $NGROK_URL"
-        # Run tests using ngrok URL
-        php artisan test --baseUrl=$NGROK_URL
+        # Set ngrok URL as environment variable
+        export BASE_URL=$NGROK_URL
+        # Run tests
+        php artisan test
 
     - name: Stop ngrok
       run: kill $(ps aux | grep '[n]grok' | awk '{print $2}')
