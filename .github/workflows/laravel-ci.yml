@@ -27,6 +27,10 @@ jobs:
     - name: Run database migrations
       run: php artisan migrate --force
 
+      # Generate application key
+    - name: Generate application key
+      run: php artisan key:generate
+
     # Install ngrok
     - name: Install ngrok
       run: |
