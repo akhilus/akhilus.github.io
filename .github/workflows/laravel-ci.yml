@@ -31,28 +31,30 @@ jobs:
       - name: Generate application key
         run: php artisan key:generate
 
-      # Install ngrok
-      - name: Install ngrok
+      # Start Laravel server and ngrok
+      - name: Start Laravel server and ngrok
         run: |
-          curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null
-          echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list
-          sudo apt update
-          sudo apt install ngrok
+          # Start Laravel server
+          php artisan serve --port=8000 &
 
-      # Start ngrok and run tests
-      - name: Run tests with ngrok
-        run: |
-          # Start ngrok with authentication and log the URL
-          ngrok authtoken 2gRhaa4vpdwtEHDVOosrrGt6Cch_269G7xqzoRiDaZKQR7LzK
-          ngrok http 8000 -log=stdout &
+          # Install ngrok
+          curl -s https://ngrok.com/download | sudo tar -xz -C /usr/local/bin ngrok
+
+          # Authenticate ngrok
+          /usr/local/bin/ngrok cr_2gRhaa4vpdwtEHDVOosrrGt6Cch
+
+          # Start ngrok and redirect traffic from ngrok URL to localhost:8000
+          /usr/local/bin/ngrok http 8000 --bind-tls=true --region=us &
           sleep 5  # Wait for ngrok to start
 
-          # Start ngrok and run tests
-      - name: Run tests with ngrok
-        run: |
-          # Start ngrok with authentication and print ngrok URL
-          NGROK_URL=$(ngrok http 8000 | grep -oP "https://.*\.ngrok.io")
+          # Get ngrok URL
+          NGROK_URL=$(curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url')
           echo "Ngrok URL: $NGROK_URL"
 
-          # Run tests
-          BASE_URL=$NGROK_URL php artisan test
+          # Set ngrok URL as environment variable
+          echo "NGROK_URL=$NGROK_URL" >> $GITHUB_ENV
+
+      # Run tests
+      - name: Run tests
+        run: |
+          php artisan test
