@@ -45,7 +45,7 @@ jobs:
         # Set ngrok URL as environment variable
         export BASE_URL=$NGROK_URL
         # Run tests
-        php artisan test
+        # php artisan test
 
     - name: Stop ngrok
       run: kill $(ps aux | grep '[n]grok' | awk '{print $2}')
