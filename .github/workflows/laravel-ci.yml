@@ -27,9 +27,22 @@ jobs:
     - name: Run database migrations
       run: php artisan migrate --force
 
-    - name: Start Laravel development server
-      run: php artisan serve --port=8000 &
+    # Start ngrok
+    - name: Start ngrok
+      run: |
+        wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
+        unzip ngrok-stable-linux-amd64.zip
+        ./ngrok http 8000 &
 
-    
-    - name: Stop Laravel development server
-      run: kill $(lsof -t -i:8000)
+    - name: Run tests with ngrok
+      run: |
+        # Wait for ngrok to start
+        sleep 5
+        # Get ngrok URL
+        NGROK_URL=$(curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url')
+        echo "Ngrok URL: $NGROK_URL"
+        # Run tests using ngrok URL
+        php artisan test --baseUrl=$NGROK_URL
+
+    - name: Stop ngrok
+      run: kill $(ps aux | grep '[n]grok' | awk '{print $2}')
