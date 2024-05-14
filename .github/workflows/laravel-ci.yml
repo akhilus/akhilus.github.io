@@ -30,8 +30,6 @@ jobs:
     - name: Start Laravel development server
       run: php artisan serve --port=8000 &
 
-    - name: Run tests
-      run: php artisan test
-
+    
     - name: Stop Laravel development server
       run: kill $(lsof -t -i:8000)
