@@ -47,12 +47,12 @@ jobs:
           ngrok http 8000 -log=stdout &
           sleep 5  # Wait for ngrok to start
 
-          # Extract ngrok URL from the ngrok log
-          NGROK_URL=$(curl -s localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url')
+          # Start ngrok and run tests
+      - name: Run tests with ngrok
+        run: |
+          # Start ngrok with authentication and print ngrok URL
+          NGROK_URL=$(ngrok http 8000 | grep -oP "https://.*\.ngrok.io")
           echo "Ngrok URL: $NGROK_URL"
 
-          # Set ngrok URL as environment variable
-          export BASE_URL=$NGROK_URL
-
           # Run tests
-          php artisan test
+          BASE_URL=$NGROK_URL php artisan test
