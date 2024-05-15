@@ -23,38 +23,38 @@ jobs:
 
       - name: Set up PHP
         run: |
-          docker exec -it debian bash -c "apt update && apt install -y php"
+          docker exec $(docker ps -qf ancestor=debian) bash -c "apt update && apt install -y php"
 
       - name: Enable PHP curl extension
         run: |
-          docker exec -it debian bash -c "apt update && apt install -y php-curl"
-          docker restart debian
+          docker exec $(docker ps -qf ancestor=debian) bash -c "apt update && apt install -y php-curl"
+          docker restart $(docker ps -qf ancestor=debian)
 
       - name: Install dependencies
         run: |
-          docker exec -it debian bash -c "apt update && apt install -y curl unzip"
-          docker exec -it debian bash -c "curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer"
-          docker exec -it debian bash -c "composer install --prefer-dist --no-ansi --no-interaction --no-progress --no-scripts"
+          docker exec $(docker ps -qf ancestor=debian) bash -c "apt update && apt install -y curl unzip"
+          docker exec $(docker ps -qf ancestor=debian) bash -c "curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer"
+          docker exec $(docker ps -qf ancestor=debian) bash -c "composer install --prefer-dist --no-ansi --no-interaction --no-progress --no-scripts"
 
       - name: Run database migrations
-        run: docker exec -it debian bash -c "php artisan migrate --force"
+        run: docker exec $(docker ps -qf ancestor=debian) bash -c "php artisan migrate --force"
 
       # Generate application key
       - name: Generate application key
-        run: docker exec -it debian bash -c "php artisan key:generate"
+        run: docker exec $(docker ps -qf ancestor=debian) bash -c "php artisan key:generate"
 
       # Install ngrok
       - name: Install ngrok
         run: |
-          docker exec -it debian bash -c "curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | apt-key add -"
-          docker exec -it debian bash -c "echo 'deb https://ngrok-agent.s3.amazonaws.com buster main' | tee /etc/apt/sources.list.d/ngrok.list"
-          docker exec -it debian bash -c "apt update && apt install -y ngrok"
-          docker exec -it debian bash -c "ngrok authtoken 1wV4b9ZH1b9xROsGgNRIDRW2b9O_31XFQNuqasUAGbfvsCjtj"
+          docker exec $(docker ps -qf ancestor=debian) bash -c "curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | apt-key add -"
+          docker exec $(docker ps -qf ancestor=debian) bash -c "echo 'deb https://ngrok-agent.s3.amazonaws.com buster main' | tee /etc/apt/sources.list.d/ngrok.list"
+          docker exec $(docker ps -qf ancestor=debian) bash -c "apt update && apt install -y ngrok"
+          docker exec $(docker ps -qf ancestor=debian) bash -c "ngrok authtoken 1wV4b9ZH1b9xROsGgNRIDRW2b9O_31XFQNuqasUAGbfvsCjtj"
 
       # Start Laravel server
       - name: Start Laravel server
-        run: docker exec -d debian bash -c "php artisan serve --port=8000"
+        run: docker exec $(docker ps -qf ancestor=debian) bash -c "php artisan serve --port=8000"
 
       # Start ngrok to expose the Laravel server
       - name: Start ngrok
-        run: docker exec -it debian bash -c "ngrok http 8000"
+        run: docker exec $(docker ps -qf ancestor=debian) bash -c "ngrok http 8000"
