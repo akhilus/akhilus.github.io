@@ -41,7 +41,7 @@ jobs:
           && sudo apt update \
           && sudo apt install ngrok
 
-          sudo mv /usr/bin/ngrok /usr/local/bin/ngrok
+          sudo mv /usr/local/bin/ngrok /usr/bin/ngrok
 
           ngrok authtoken 1wV4b9ZH1b9xROsGgNRIDRW2b9O_31XFQNuqasUAGbfvsCjtj
 
