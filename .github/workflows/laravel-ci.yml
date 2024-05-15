@@ -34,7 +34,8 @@ jobs:
       # Install ngrok
       - name: Install ngrok
         run: |
-          sudo wget -q -O /usr/local/bin/ngrok https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-stable-linux-amd64.zip
+          sudo wget -q -O /tmp/ngrok.zip https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
+          sudo unzip -o /tmp/ngrok.zip -d /usr/local/bin
           sudo chmod +x /usr/local/bin/ngrok
           ngrok config add-authtoken 1wV4b9ZH1b9xROsGgNRIDRW2b9O_31XFQNuqasUAGbfvsCjtj
 
