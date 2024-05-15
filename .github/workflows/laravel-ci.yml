@@ -1,4 +1,4 @@
-name: Laravel CI
+name: Laravel Docker CI
 
 on:
   push:
@@ -16,39 +16,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
 
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-ansi --no-interaction --no-progress --no-scripts
-
-      - name: Run database migrations
-        run: php artisan migrate --force
-
-      # Generate application key
-      - name: Generate application key
-        run: php artisan key:generate
-
-      # Install ngrok
-      - name: Install ngrok
+      - name: Build the Docker image
         run: |
-          curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
-          | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
-          && echo "deb https://ngrok-agent.s3.amazonaws.com buster main" \
-          | sudo tee /etc/apt/sources.list.d/ngrok.list \
-          && sudo apt update \
-          && sudo apt install ngrok
-          ngrok authtoken 1wV4b9ZH1b9xROsGgNRIDRW2b9O_31XFQNuqasUAGbfvsCjtj
+          docker buildx create --name mybuilder
+          docker buildx use mybuilder
+          docker buildx inspect --bootstrap
+          docker buildx build --platform linux/amd64 -t laravel-app .
 
-      # Start Laravel server and ngrok in the background
-      - name: Start Laravel server and ngrok
-        run: |
-          nohup php artisan serve --port=8000 > laravel.log 2>&1 &
-          nohup ngrok http 8000 > ngrok.log 2>&1 &
-          echo "Laravel server and ngrok process started"
-
-      # Wait for Laravel server to start
-      - name: Wait for Laravel server to start
-        run: sleep 10
+      - name: Run the Docker container
+        run: docker run -d -p 8000:8000 laravel-app
