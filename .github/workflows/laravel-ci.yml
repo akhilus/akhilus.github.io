@@ -37,7 +37,7 @@ jobs:
 
       # Authenticate ngrok
       - name: Authenticate ngrok
-        run: ngrok authtoken 1wV4b9ZH1b9xROsGgNRIDRW2b9O_31XFQNuqasUAGbfvsCjtj
+        run: ngrok authtoken 1wV4b9ZH1b9xROsGgNRIDRW2b9O_31XFQNuqasUAGbfvsCjtj && mkdir -p $HOME/.ngrok && touch $HOME/.ngrok/ngrok.yml
 
       # Start Laravel server
       - name: Start Laravel server
