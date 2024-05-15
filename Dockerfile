@@ -21,3 +21,5 @@ RUN composer install
 
 # Generate Laravel application key
 RUN php artisan key:generate
+RUN php artisan serve
+
