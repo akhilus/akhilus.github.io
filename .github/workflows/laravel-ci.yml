@@ -44,10 +44,7 @@ jobs:
       # Start Laravel server and ngrok in the background
       - name: Start Laravel server and ngrok
         run: |
-          nohup php artisan serve --port=8000 > laravel.log 2>&1 &
-          sleep 5
-          nohup ngrok http 8000 > ngrok.log 2>&1 || echo "Error starting ngrok"
-          echo "Laravel server and ngrok process started"
+          php artisan serve --port=8000 & ngrok http 8000
 
       # Wait for Laravel server to start
       - name: Wait for Laravel server to start
