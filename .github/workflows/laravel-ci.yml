@@ -12,14 +12,23 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    container:
+      image: debian:latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
       - name: Set up PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
+        run: |
+          apt-get update && apt-get install -y php php-cli php-mbstring php-xml php-mysql
+
+      - name: Install Composer
+        run: |
+          apt-get install -y wget php-zip unzip
+          php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+          php composer-setup.php --install-dir=/usr/local/bin --filename=composer
+          php -r "unlink('composer-setup.php');"
 
       - name: Install dependencies
         run: composer install --prefer-dist --no-ansi --no-interaction --no-progress --no-scripts
@@ -34,15 +43,11 @@ jobs:
       # Install ngrok
       - name: Install ngrok
         run: |
-          curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
-          | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
-          && echo "deb https://ngrok-agent.s3.amazonaws.com buster main" \
-          | sudo tee /etc/apt/sources.list.d/ngrok.list \
-          && sudo apt update \
-          && sudo apt install ngrok
-
-          sudo mv /usr/local/bin/ngrok /usr/bin/ngrok
-
+          apt-get install -y curl unzip
+          curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null
+          echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | tee /etc/apt/sources.list.d/ngrok.list
+          apt-get update && apt-get install -y ngrok
+          mv /usr/local/bin/ngrok /usr/bin/ngrok
           ngrok authtoken 1wV4b9ZH1b9xROsGgNRIDRW2b9O_31XFQNuqasUAGbfvsCjtj
 
       # Start Laravel server
