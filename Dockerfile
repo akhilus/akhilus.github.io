@@ -32,4 +32,5 @@ RUN php artisan key:generate
 RUN ngrok authtoken 1wV4b9ZH1b9xROsGgNRIDRW2b9O_31XFQNuqasUAGbfvsCjtj
 
 # Start Laravel server and Ngrok
-RUN php artisan serve --port=8000 & ngrok http 8000
+RUN php artisan serve --port=8000 & sleep 5 && ngrok http 8000
+
