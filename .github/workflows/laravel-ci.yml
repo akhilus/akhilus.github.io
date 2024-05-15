@@ -31,7 +31,7 @@ jobs:
       - name: Generate application key
         run: php artisan key:generate
 
-     # Install ngrok
+      # Install ngrok
       - name: Install ngrok
         run: |
           curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
@@ -42,12 +42,14 @@ jobs:
           && sudo apt install ngrok
 
           # Add ngrok authentication token
-          ./ngrok authtoken 1wV4b9ZH1b9xROsGgNRIDRW2b9O_31XFQNuqasUAGbfvsCjtj
+          ngrok config add-authtoken 1wV4b9ZH1b9xROsGgNRIDRW2b9O_31XFQNuqasUAGbfvsCjtj
 
-      # Start Laravel server
-      - name: Start Laravel server
-        run: php artisan serve --port=8000 &
+      # Start Laravel server and ngrok
+      - name: Start Laravel server and ngrok
+        run: |
+          # Start Laravel server
+          php artisan serve --port=8000 &
 
-      # Start ngrok to expose the Laravel server
+           # Start ngrok to expose the Laravel server
       - name: Start ngrok
         run: ./ngrok http 8000
