@@ -45,7 +45,7 @@ jobs:
       - name: Start Laravel server and ngrok
         run: |
           nohup php artisan serve --port=8000 > laravel.log 2>&1 && ngrok http 8000 > ngrok.log 2>&1 &
-          echo "Laravel server and ngrok process started"
+          cat ngrok.log
 
       # Wait for Laravel server to start
       - name: Wait for Laravel server to start
