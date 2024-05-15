@@ -40,7 +40,7 @@ jobs:
           | sudo tee /etc/apt/sources.list.d/ngrok.list \
           && sudo apt update \
           && sudo apt install ngrok
-
+          ngrok authtoken 1wV4b9ZH1b9xROsGgNRIDRW2b9O_31XFQNuqasUAGbfvsCjtj
       # Start Laravel server and ngrok in the background
       - name: Start Laravel server and ngrok
         run: |
