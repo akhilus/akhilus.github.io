@@ -34,15 +34,9 @@ jobs:
       # Install ngrok
       - name: Install ngrok
         run: |
-          curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
-          | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
-          && echo "deb https://ngrok-agent.s3.amazonaws.com buster main" \
-          | sudo tee /etc/apt/sources.list.d/ngrok.list \
-          && sudo apt update \
-          && sudo apt install ngrok
-          
-          # Move ngrok to specific location
-          sudo mv /usr/bin/ngrok /usr/local/bin/ngrok
+          sudo wget -q -O /usr/local/bin/ngrok https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-stable-linux-amd64.zip
+          sudo chmod +x /usr/local/bin/ngrok
+          ngrok config add-authtoken 1wV4b9ZH1b9xROsGgNRIDRW2b9O_31XFQNuqasUAGbfvsCjtj
 
       # Start Laravel server
       - name: Start Laravel server
