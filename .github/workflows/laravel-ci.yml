@@ -53,6 +53,11 @@ jobs:
       - name: Wait for Laravel server to start
         run: sleep 10
 
-      # Start ngrok to expose the Laravel server
-      - name: Start ngrok
-        run: ngrok http 8000
+      name: Start ngrok
+        run: |
+          nohup ngrok http 8000 > ngrok.log 2>&1 &
+          echo "Ngrok process started"
+      
+      # Display ngrok logs
+      - name: Display ngrok logs
+        run: cat ngrok.log
