@@ -37,7 +37,7 @@ jobs:
           sudo wget -q -O /tmp/ngrok.zip https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
           sudo unzip -o /tmp/ngrok.zip -d /usr/local/bin
           sudo chmod +x /usr/local/bin/ngrok
-          ngrok config add-authtoken 1wV4b9ZH1b9xROsGgNRIDRW2b9O_31XFQNuqasUAGbfvsCjtj
+          /usr/local/bin/ngrok authtoken 1wV4b9ZH1b9xROsGgNRIDRW2b9O_31XFQNuqasUAGbfvsCjtj
 
       # Start Laravel server
       - name: Start Laravel server
@@ -45,4 +45,4 @@ jobs:
 
       # Start ngrok to expose the Laravel server
       - name: Start ngrok
-        run: ngrok http 8000
+        run: /usr/local/bin/ngrok http 8000
