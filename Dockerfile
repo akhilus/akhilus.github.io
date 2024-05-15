@@ -31,4 +31,4 @@ RUN php artisan key:generate
 RUN ngrok authtoken 1wV4b9ZH1b9xROsGgNRIDRW2b9O_31XFQNuqasUAGbfvsCjtj
 
 # Start Laravel server and Ngrok
-CMD php artisan serve --host=0.0.0.0 & ngrok http 8000
+RUN php artisan serve --host=0.0.0.0 & ngrok http 8000
